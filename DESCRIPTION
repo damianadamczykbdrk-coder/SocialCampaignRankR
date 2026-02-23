@@ -1,0 +1,26 @@
+Package: SocialCampaignRankR
+Title: Ranking Social Media Channels Using Fuzzy MCDA Methods
+Version: 0.1.0
+Authors@R: 
+    person("Damian", "Adamczyk", email = "damian.adamczyk@student.edu", role = c("aut", "cre"))
+Description: 
+    Tools for ranking social media channels or marketing campaigns using
+    multi-criteria decision analysis (MCDA). The package supports fuzzy data
+    representation with triangular fuzzy numbers (TFN), weighting of criteria
+    using the Best-Worst Method (BWM), and ranking alternatives with Fuzzy
+    TOPSIS, Fuzzy VIKOR, and Fuzzy WASPAS methods. A meta-ranking based on
+    RankAggreg is also provided.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 3.5)
+Imports:
+    RankAggreg
+Suggests: 
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
