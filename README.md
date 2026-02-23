@@ -39,6 +39,7 @@ budowa meta-rankingu (konsensus) i analiza zgodności rankingów.
 Pakiet można testować lokalnie z katalogu projektu:
 
 devtools::load_all()
+
 🔹 Dane przykładowe
 
 Pakiet zawiera przykładowy zbiór danych:
@@ -49,6 +50,7 @@ head(social_campaign_raw)
 Dane reprezentują metryki kampanii/kanałów social media, a alternatywami są kanały (Channel).
 
 🔹 Szybki przykład użycia
+
 library(SocialCampaignRankR)
 
 # Definicja kryteriów
@@ -84,6 +86,7 @@ res_topsis <- rozmyty_topsis(
 )
 
 res_topsis$wyniki
+
 🔹 Meta-ranking
 
 Pakiet umożliwia agregację rankingów metod bazowych:
@@ -98,11 +101,13 @@ meta <- rozmyty_meta_ranking(
 
 meta$porownanie
 round(meta$korelacje, 2)
+
 🔹 Dokumentacja
 
 Pełny opis działania pakietu wraz z przykładem krok po kroku znajduje się w vignette:
 
 browseVignettes("SocialCampaignRankR")
+
 🔹 Zastosowania
 
 analiza efektywności kanałów social media,
