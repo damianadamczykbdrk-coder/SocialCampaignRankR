@@ -1,82 +1,81 @@
 SocialCampaignRankR
 
-SocialCampaignRankR to pakiet R służący do rankingowania kanałów social media
-(lub kampanii marketingowych) z wykorzystaniem metod wielokryterialnego wspomagania decyzji (MCDA),
-z uwzględnieniem wag kryteriów (BWM) oraz elementów rozmycia (TFN – triangular fuzzy numbers).
+SocialCampaignRankR jest pakietem języka R przeznaczonym do rankingowania kanałów social media oraz kampanii marketingowych z wykorzystaniem metod wielokryterialnego wspomagania decyzji (MCDA – Multi-Criteria Decision Analysis).
 
-Pakiet został przygotowany jako projekt zaliczeniowy i demonstracyjny.
+Pakiet umożliwia uwzględnienie wag kryteriów (w tym wyznaczanych metodą Best–Worst Method) oraz zastosowanie podejścia rozmytego opartego na trójkątnych liczbach rozmytych (TFN – Triangular Fuzzy Numbers).
 
-🔹 Główne możliwości
+Projekt został opracowany jako rozwiązanie demonstracyjne i zaliczeniowe, prezentujące praktyczne zastosowanie metod MCDA w analizie danych marketingowych.
 
-przygotowanie danych do analizy MCDA na podstawie surowych metryk,
+Zakres funkcjonalny
 
-definiowanie kryteriów za pomocą czytelnej składni (Kryterium =~ zm1 + zm2),
+Pakiet umożliwia:
 
-skalowanie wyników do skali Saaty’ego (1–9),
+przygotowanie danych do analizy MCDA na podstawie surowych metryk marketingowych,
 
-rozmycie danych do postaci TFN (Triangular Fuzzy Numbers),
+definiowanie kryteriów agregujących zmienne wejściowe przy użyciu deklaratywnej składni:
+
+Kryterium =~ zm1 + zm2
+
+skalowanie wartości do skali preferencji Saaty’ego (1–9),
+
+transformację danych do postaci trójkątnych liczb rozmytych (TFN),
 
 wyznaczanie wag kryteriów:
 
-ręcznie,
+manualnie,
 
-metodą BWM (Best–Worst Method),
+metodą Best–Worst Method (BWM),
 
-metodą Entropii Shannona (automatyczny fallback),
+metodą entropii Shannona (automatycznie),
 
-ranking alternatyw metodami:
+budowę rankingów alternatyw z wykorzystaniem metod:
 
-Fuzzy TOPSIS
+Fuzzy TOPSIS,
 
-Fuzzy VIKOR
+Fuzzy VIKOR,
 
-Fuzzy WASPAS
+Fuzzy WASPAS,
 
-budowa meta-rankingu (konsensus) i analiza zgodności rankingów.
+agregację rankingów bazowych (meta-ranking) wraz z analizą zgodności wyników.
 
-🔹 Instalacja (lokalnie)
+Instalacja
 
-Pakiet można testować lokalnie z katalogu projektu:
+Pakiet może być testowany lokalnie z poziomu katalogu projektu:
 
 devtools::load_all()
-
-🔹 Dane przykładowe
+Dane przykładowe
 
 Pakiet zawiera przykładowy zbiór danych:
 
 data("social_campaign_raw")
 head(social_campaign_raw)
 
-Dane reprezentują metryki kampanii/kanałów social media, a alternatywami są kanały (Channel).
+Zbiór obejmuje metryki kampanii lub kanałów social media. Alternatywy identyfikowane są za pomocą zmiennej Channel, natomiast pozostałe kolumny stanowią wskaźniki wykorzystywane w analizie wielokryterialnej.
 
-🔹 Szybki przykład użycia
+Przykład zastosowania
 
-library(SocialCampaignRankR)
+Poniżej przedstawiono przykładową procedurę analizy.
 
-# Definicja kryteriów
+Definicja kryteriów
 skladnia <- "
 Reach =~ impressions + reach;
 Engagement =~ likes + comments + shares + engagement_rate;
 Cost =~ cpc + cpa;
 Conversion =~ ctr + conversions
 "
-
-# Przygotowanie macierzy TFN
+Przygotowanie macierzy decyzyjnej
 M <- przygotuj_dane_mcda(
   dane = social_campaign_raw,
   skladnia = skladnia,
   kolumna_alternatyw = "Channel"
 )
-
-# Typy kryteriów
+Określenie typów kryteriów
 typy <- c("max", "max", "min", "max")
-
-# Wagi metodą BWM
+Wyznaczenie wag metodą BWM
 kryteria <- c("Reach","Engagement","Cost","Conversion")
 b_to_o <- c(4, 3, 8, 1)
 o_to_w <- c(6, 5, 1, 7)
-
-# Ranking TOPSIS
+Ranking metodą Fuzzy TOPSIS
 res_topsis <- rozmyty_topsis(
   macierz_decyzyjna = M,
   typy_kryteriow = typy,
@@ -86,10 +85,9 @@ res_topsis <- rozmyty_topsis(
 )
 
 res_topsis$wyniki
+Meta-ranking
 
-🔹 Meta-ranking
-
-Pakiet umożliwia agregację rankingów metod bazowych:
+Pakiet umożliwia agregację rankingów uzyskanych różnymi metodami oraz analizę ich zgodności.
 
 meta <- rozmyty_meta_ranking(
   macierz_decyzyjna = M,
@@ -102,18 +100,35 @@ meta <- rozmyty_meta_ranking(
 meta$porownanie
 round(meta$korelacje, 2)
 
-🔹 Dokumentacja
+Wyniki obejmują:
 
-Pełny opis działania pakietu wraz z przykładem krok po kroku znajduje się w vignette:
+zestawienie rankingów cząstkowych,
+
+ranking zagregowany,
+
+macierz korelacji między metodami.
+
+Dokumentacja
+
+Szczegółowy opis działania pakietu wraz z przykładem krok po kroku dostępny jest w vignette:
 
 browseVignettes("SocialCampaignRankR")
+Potencjalne zastosowania
 
-🔹 Zastosowania
+Pakiet może być wykorzystywany w szczególności do:
 
-analiza efektywności kanałów social media,
+analizy efektywności kanałów social media,
 
-porównywanie kampanii marketingowych,
+porównywania kampanii marketingowych w ujęciu wielokryterialnym,
 
-demonstracja metod MCDA i BWM w praktyce,
+demonstracji metod MCDA i BWM w zastosowaniach praktycznych,
 
-projekty dydaktyczne i analityczne.
+celów dydaktycznych i projektów analitycznych.
+
+Jeżeli chcesz, mogę teraz:
+
+przygotować wersję w języku angielskim w stylu publikacyjnym,
+
+dopasować tekst do wymogów pracy dyplomowej,
+
+albo skrócić go do bardziej syntetycznej wersji repozytoryjnej.
