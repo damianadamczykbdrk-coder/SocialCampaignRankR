@@ -1,126 +1,140 @@
-SocialCampaignRankR
+# SocialCampaignRankR
 
-SocialCampaignRankR jest pakietem języka R przeznaczonym do rankingowania kanałów social media oraz kampanii marketingowych z wykorzystaniem metod wielokryterialnego wspomagania decyzji (MCDA – Multi-Criteria Decision Analysis).
+SocialCampaignRankR is an R package designed for ranking social media
+channels and marketing campaigns using Multi-Criteria Decision Analysis
+(MCDA).
 
-Pakiet umożliwia uwzględnienie wag kryteriów (w tym wyznaczanych metodą Best–Worst Method) oraz zastosowanie podejścia rozmytego opartego na trójkątnych liczbach rozmytych (TFN – Triangular Fuzzy Numbers).
+The package supports criterion weighting (including the Best--Worst
+Method) and fuzzy extensions based on Triangular Fuzzy Numbers (TFN).\
+The project was developed as a demonstrative and academic implementation
+of MCDA methods in marketing analytics.
 
-Projekt został opracowany jako rozwiązanie demonstracyjne i zaliczeniowe, prezentujące praktyczne zastosowanie metod MCDA w analizie danych marketingowych.
+------------------------------------------------------------------------
 
-Zakres funkcjonalny
+## Features
 
-Pakiet umożliwia:
+-   Preparation of raw marketing metrics for MCDA analysis
 
-przygotowanie danych do analizy MCDA na podstawie surowych metryk marketingowych,
+-   Declarative criterion definition syntax:
 
-definiowanie kryteriów agregujących zmienne wejściowe przy użyciu deklaratywnej składni:
+    Kryterium =\~ zm1 + zm2
 
-Kryterium =~ zm1 + zm2
+-   Scaling to Saaty preference scale (1--9)
 
-skalowanie wartości do skali preferencji Saaty’ego (1–9),
+-   Transformation to Triangular Fuzzy Numbers (TFN)
 
-transformację danych do postaci trójkątnych liczb rozmytych (TFN),
+-   Criterion weighting:
 
-wyznaczanie wag kryteriów:
+    -   Manual weights
+    -   Best--Worst Method (BWM)
+    -   Shannon entropy (automatic fallback)
 
-manualnie,
+-   Ranking methods:
 
-metodą Best–Worst Method (BWM),
+    -   Fuzzy TOPSIS
+    -   Fuzzy VIKOR
+    -   Fuzzy WASPAS
 
-metodą entropii Shannona (automatycznie),
+-   Meta-ranking with consistency and correlation analysis
 
-budowę rankingów alternatyw z wykorzystaniem metod:
+------------------------------------------------------------------------
 
-Fuzzy TOPSIS,
+## Installation (Local Development)
 
-Fuzzy VIKOR,
+Load the package from the project directory:
 
-Fuzzy WASPAS,
+    devtools::load_all()
 
-agregację rankingów bazowych (meta-ranking) wraz z analizą zgodności wyników.
+------------------------------------------------------------------------
 
-Instalacja
+## Example Data
 
-Pakiet może być testowany lokalnie z poziomu katalogu projektu:
+    data("social_campaign_raw")
+    head(social_campaign_raw)
 
-devtools::load_all()
-Dane przykładowe
+Alternatives are identified by the `Channel` column.
 
-Pakiet zawiera przykładowy zbiór danych:
+------------------------------------------------------------------------
 
-data("social_campaign_raw")
-head(social_campaign_raw)
+## Example Workflow
 
-Zbiór obejmuje metryki kampanii lub kanałów social media. Alternatywy identyfikowane są za pomocą zmiennej Channel, natomiast pozostałe kolumny stanowią wskaźniki wykorzystywane w analizie wielokryterialnej.
+### Define Criteria
 
-Przykład zastosowania
+    skladnia <- "
+    Reach =~ impressions + reach;
+    Engagement =~ likes + comments + shares + engagement_rate;
+    Cost =~ cpc + cpa;
+    Conversion =~ ctr + conversions
+    "
 
-Poniżej przedstawiono przykładową procedurę analizy.
+### Prepare Decision Matrix
 
-Definicja kryteriów
-skladnia <- "
-Reach =~ impressions + reach;
-Engagement =~ likes + comments + shares + engagement_rate;
-Cost =~ cpc + cpa;
-Conversion =~ ctr + conversions
-"
-Przygotowanie macierzy decyzyjnej
-M <- przygotuj_dane_mcda(
-  dane = social_campaign_raw,
-  skladnia = skladnia,
-  kolumna_alternatyw = "Channel"
-)
-Określenie typów kryteriów
-typy <- c("max", "max", "min", "max")
-Wyznaczenie wag metodą BWM
-kryteria <- c("Reach","Engagement","Cost","Conversion")
-b_to_o <- c(4, 3, 8, 1)
-o_to_w <- c(6, 5, 1, 7)
-Ranking metodą Fuzzy TOPSIS
-res_topsis <- rozmyty_topsis(
-  macierz_decyzyjna = M,
-  typy_kryteriow = typy,
-  bwm_kryteria = kryteria,
-  bwm_najlepsze = b_to_o,
-  bwm_najgorsze = o_to_w
-)
+    M <- przygotuj_dane_mcda(
+      dane = social_campaign_raw,
+      skladnia = skladnia,
+      kolumna_alternatyw = "Channel"
+    )
 
-res_topsis$wyniki
-Meta-ranking
+### Define Criterion Types
 
-Pakiet umożliwia agregację rankingów uzyskanych różnymi metodami oraz analizę ich zgodności.
+    typy <- c("max", "max", "min", "max")
 
-meta <- rozmyty_meta_ranking(
-  macierz_decyzyjna = M,
-  typy_kryteriow = typy,
-  bwm_kryteria = kryteria,
-  bwm_najlepsze = b_to_o,
-  bwm_najgorsze = o_to_w
-)
+### Compute Weights (BWM)
 
-meta$porownanie
-round(meta$korelacje, 2)
+    kryteria <- c("Reach","Engagement","Cost","Conversion")
+    b_to_o <- c(4, 3, 8, 1)
+    o_to_w <- c(6, 5, 1, 7)
 
-Wyniki obejmują:
+### Fuzzy TOPSIS Ranking
 
-zestawienie rankingów cząstkowych,
+    res_topsis <- rozmyty_topsis(
+      macierz_decyzyjna = M,
+      typy_kryteriow = typy,
+      bwm_kryteria = kryteria,
+      bwm_najlepsze = b_to_o,
+      bwm_najgorsze = o_to_w
+    )
 
-ranking zagregowany,
+    res_topsis$wyniki
 
-macierz korelacji między metodami.
+------------------------------------------------------------------------
 
-Dokumentacja
+## Meta-Ranking
 
-Szczegółowy opis działania pakietu wraz z przykładem krok po kroku dostępny jest w vignette:
+    meta <- rozmyty_meta_ranking(
+      macierz_decyzyjna = M,
+      typy_kryteriow = typy,
+      bwm_kryteria = kryteria,
+      bwm_najlepsze = b_to_o,
+      bwm_najgorsze = o_to_w
+    )
 
-browseVignettes("SocialCampaignRankR")
-Potencjalne zastosowania
+    meta$porownanie
+    round(meta$korelacje, 2)
 
-Pakiet może być wykorzystywany w szczególności do:
+------------------------------------------------------------------------
 
-analizy efektywności kanałów social media,
+## Documentation
 
-porównywania kampanii marketingowych w ujęciu wielokryterialnym,
+    browseVignettes("SocialCampaignRankR")
 
-demonstracji metod MCDA i BWM w zastosowaniach praktycznych,
+------------------------------------------------------------------------
 
-celów dydaktycznych i projektów analitycznych.
+## Applications
+
+-   Social media performance evaluation
+-   Marketing campaign comparison
+-   Demonstration of MCDA and BWM methods
+-   Educational and analytical projects
+
+------------------------------------------------------------------------
+
+## License
+
+Specify license in DESCRIPTION file (e.g., MIT, GPL-3).
+
+------------------------------------------------------------------------
+
+## Author
+
+Provide author information in the DESCRIPTION file.
